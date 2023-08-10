@@ -25,9 +25,9 @@ def get_fav_movie(df, userId):
     )
     return user_top_movies
 
-def get_recommended_movies(df, top_movie, userId):
+def get_recommended_movies(df, top_movie, userId, num_recommendations):
     list_of_movies = []
-    
+
     # Drop columns with zero variance or only one unique value
     df = df.dropna(axis='columns', thresh=2)
     df = df.loc[:, (df != df.iloc[0]).any()]
@@ -36,8 +36,8 @@ def get_recommended_movies(df, top_movie, userId):
     lists = corr.sort_values(ascending=False).iloc[:50].index.to_list()
     for movie in lists:
         if did_already_watch(df, movie, userId) == 0:
-           list_of_movies.append((movie, get_genre(movie))) # Added genre to the list
-        if len(list_of_movies) == 5:
+           list_of_movies.append((movie, get_genre(movie))) 
+        if len(list_of_movies) == num_recommendations:
            break
     return list_of_movies
 
@@ -50,17 +50,17 @@ def did_already_watch(df, movie, userId):
 def chat(df, userId):
     movies_ratings_pivot = pd.pivot_table(df, values='rating', columns='title', index='userId')
     st.write(f'''Hi {userId}! I am your personal recommender.
-    Would you like me to recommend some popular movies based on your previous ratings?''')
-    x = st.selectbox("Please choose:", options=["Yes", "No"])
+    This system recommends movies based on your previous ratings. It identifies correlations between the movies you've rated highly and suggests similar ones that you might enjoy.
+    How many movie recommendations would you like?''')
+    num_recommendations = st.number_input("Please enter the number of recommendations:", min_value=1, max_value=10, step=1)
 
-    if x == 'Yes':
-        fav_movie = get_fav_movie(df, userId)['title'].iloc[0]
-        list_of_movies = get_recommended_movies(movies_ratings_pivot, fav_movie, userId)
-        st.write("Here are some movies you might like:")
-        for movie, genre in list_of_movies: # Added genre
-            st.write(f'''- {movie} (Genre: {genre})''') # Displaying genre
-    else:
-        st.write(f'''Goodbye! Feel free to come back anytime.''')
+    fav_movie = get_fav_movie(df, userId)['title'].iloc[0]
+    list_of_movies = get_recommended_movies(movies_ratings_pivot, fav_movie, userId, num_recommendations)
+
+    # Create a DataFrame to display the recommended movies and their genres
+    recommended_movies_df = pd.DataFrame(list_of_movies, columns=['Title', 'Genre'])
+    st.write("Here are some movies you might like:")
+    st.write(recommended_movies_df) # Displaying the DataFrame
 
 user_id = st.number_input("Enter your user ID:", min_value=1, max_value=movies_ratings['userId'].max(), step=1)
 chat(movies_ratings, user_id)
