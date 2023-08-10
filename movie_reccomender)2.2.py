@@ -5,6 +5,23 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
 import random
 import sys
+# Reading data
+url = 'https://drive.google.com/file/d/1WB7QQGjulU_ODpfIAkey5ZO5dYDStkc_/view?usp=sharing'
+path = 'https://drive.google.com/uc?id=' + url.split('/')[-2]
+movies = pd.read_csv(path)
+
+url = 'https://drive.google.com/file/d/1sQl_yG4sv_AKIcO2Z1d_nw2XTQ7FWaTt/view?usp=sharing'
+path = 'https://drive.google.com/uc?id=' + url.split('/')[-2]
+ratings = pd.read_csv(path)
+
+dictionary = movies.filter(['movieId', 'title']).drop_duplicates()
+
+# Title for the app
+st.title('Personalized Movie Recommender: A Multi-Method Approach')
+
+st.write("""
+Choose the recommendation method you prefer, and let's find some great movies for you!
+""")
 
 # Function that takes as an input a user id and outputs the top n movies of the user:
 def top_movies(df_rate, df_movies, name, range_of_days: float, n):
@@ -108,23 +125,7 @@ def train_test_creation(data, random_state=1, train_size=.8):
         )
     return train, test, train_pos, test_pos
 
-# Reading data
-url = 'https://drive.google.com/file/d/1WB7QQGjulU_ODpfIAkey5ZO5dYDStkc_/view?usp=sharing'
-path = 'https://drive.google.com/uc?id=' + url.split('/')[-2]
-movies = pd.read_csv(path)
 
-url = 'https://drive.google.com/file/d/1sQl_yG4sv_AKIcO2Z1d_nw2XTQ7FWaTt/view?usp=sharing'
-path = 'https://drive.google.com/uc?id=' + url.split('/')[-2]
-ratings = pd.read_csv(path)
-
-dictionary = movies.filter(['movieId', 'title']).drop_duplicates()
-
-# Title for the app
-st.title('Personalized Movie Recommender: A Multi-Method Approach')
-
-st.write("""
-Choose the recommendation method you prefer, and let's find some great movies for you!
-""")
 
 # Sidebar with options
 method = st.sidebar.selectbox(
