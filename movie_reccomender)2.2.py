@@ -139,6 +139,7 @@ def train_test_creation(data, random_state=1, train_size=.8):
         index=sparse_df.index
         )
     return train, test, train_pos, test_pos
+    
 # Sidebar with options
 method = st.sidebar.selectbox(
     "Choose a recommendation method:",
@@ -158,14 +159,18 @@ if st.sidebar.button("Get Recommendations"):
         pop_movies_list = pop_movies(ratings, movies, rate_tresh, range_of_days)
         st.write(f"Here are the most popular movies:")
         for movie in pop_movies_list[:n_movies]:
-            st.write(movie)    
-    corr = pd.pivot_table(df_merge, values='rating', columns='title', index='userId').dropna(axis='index', thresh=tresh_n).corr()
-    top_corr = corr.filter(top_movies).round(1)
-    num_list = [0.9, 1.0]
-    for i in num_list:
-        for index, value in top_corr.iterrows():
-            if i in value.values:
-                recommend_movies.append(index)
-    return recommend_movies
+            st.write(movie)
+    elif method == "Item-Based Collaborative Filtering":
+        top_movies_list = top_movies(ratings, movies, user_id, range_of_days, n_movies)
+        recommended_movies = item_based_recommender(ratings, movies, top_movies_list, range_of_days, rate_tresh)
+        st.write(f"Here are {n_movies} similar movies based on your top-rated movies:")
+        for movie in recommended_movies[:n_movies]:
+            st.write(movie)
+    elif method == "User-Based Recommendations":
+        recommendation = get_user_based_recommendations(ratings.drop(columns='timestamp'), user_id=user_id, top_n=n_movies)
+        recommended_movies = item_to_movie_title(recommendation)
+        st.write(f"You will probably like these movies:")
+        for movie in recommended_movies:
+            st.write(movie)
 
 # Function for user-based recommendation:
