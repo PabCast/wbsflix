@@ -16,7 +16,7 @@ popular_movies = popular_movies.sort_values(by='rating', ascending=False)
 popular_movies = popular_movies.rename(columns={'rating': 'average_rating'})
 
 # Get top 10 popular movies
-top_10_popular_movies = popular_movies.head(10)
+top_10_popular_movies = popular_movies.head(10).copy()
 
 # Add image URLs to popular movies DataFrame
 image_urls = []
@@ -32,11 +32,11 @@ top_10_popular_movies['image_url'] = image_urls
 # Display popular movies
 st.title('Personalized Movie Recommender')
 st.subheader('Most Popular Movies')
-st.dataframe(top_10_popular_movies[['title', 'genres', 'average_rating', 'image_url']])
-
-st.write("""
-Choose a user ID and find some great movie recommendations!
-""")
+for index, row in top_10_popular_movies.iterrows():
+    st.image(row['image_url'], width=200)
+    st.write(f"Title: {row['title']}")
+    st.write(f"Genres: {row['genres']}")
+    st.write(f"Average Rating: {row['average_rating']}")
 
 # Read data using Surprise library
 reader = Reader(rating_scale=(1, 5))
