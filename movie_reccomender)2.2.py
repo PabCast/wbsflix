@@ -5,9 +5,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
 import random
 import sys
-# Reading data
-movies = pd.read_csv(wbsflix/data/movies.csv)
-ratings = pd.read_csv(wbsflix/data/ratings.csv)
+url = 'https://drive.google.com/file/d/1WB7QQGjulU_ODpfIAkey5ZO5dYDStkc_/view?usp=sharing'
+path = 'https://drive.google.com/uc?id=' + url.split('/')[-2]
+movies = pd.read_csv(path)
+url = 'https://drive.google.com/file/d/1sQl_yG4sv_AKIcO2Z1d_nw2XTQ7FWaTt/view?usp=sharing'
+path = 'https://drive.google.com/uc?id=' + url.split('/')[-2]
+ratings = pd.read_csv(path)
+
 dictionary = movies.filter(['movieId', 'title']).drop_duplicates()
 # Title for the app
 st.title('Personalized Movie Recommender: A Multi-Method Approach')
