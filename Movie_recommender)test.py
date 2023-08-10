@@ -24,7 +24,6 @@ simple_reccomenders = pd.read_csv('data/second_recommender.csv')
 
 genres = pd.read_csv('data/genres.csv')
 genres = genres.append({'id':1,'genre':'All'},ignore_index=True)
-
 rating_movies = pd.read_csv('data/rating_movies.csv')
 
 
