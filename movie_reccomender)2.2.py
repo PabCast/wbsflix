@@ -59,9 +59,9 @@ def item_based_recommender(df_rate, df_movies, top_movies, range_of_days: float,
     #jenny's update
 data = ratings[['userId', 'movieId', 'rating']]
 watcher = Reader(rating_scale=(1, 5.0))
-data = Dataset.load_from_df(data, watcher)
+data_ub = Dataset.load_from_df(data, watcher)
 
-trainset, testset = train_test_split(data, test_size=0.2, random_state=142)
+trainset, testset = train_test_split(data_ub, test_size=0.2, random_state=142)
 
 full_train = data.build_full_trainset()
 algo = SVD(n_factors=150, n_epochs=30, lr_all=0.01, reg_all=0.05)
