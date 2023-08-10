@@ -32,21 +32,21 @@ popular_movies = data_combined.groupby(['movieId', 'title', 'genres'])['rating']
 popular_movies = popular_movies.sort_values(by='rating', ascending=False)
 popular_movies = popular_movies.rename(columns={'rating': 'average_rating'})
 
-# Display popular movies
-st.title('Personalized Movie Recommender')
-st.subheader('Most Popular Movies')
-for index, row in popular_movies.head(10).iterrows():
-    # Fetching images using append_to_response
-    movie_id = row['movieId']
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=da33e359269762e4cfacfd0eec2816a3&append_to_response=images"
+# Add image URLs to popular movies DataFrame
+image_urls = []
+for movie_id in popular_movies.head(10)['movieId']:
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=YOUR_API_KEY&append_to_response=images"
     response = requests.get(url)
     images = response.json().get('images', {})
     image_url = images['posters'][0]['file_path'] if images.get('posters') else None
-    if image_url:
-        st.image(f"https://image.tmdb.org/t/p/original{image_url}")
-    st.write(f"Title: {row['title']}")
-    st.write(f"Genres: {row['genres']}")
-    st.write(f"Average Rating: {row['average_rating']}")
+    image_urls.append(f"https://image.tmdb.org/t/p/w200{image_url}" if image_url else None)
+
+popular_movies['image_url'] = image_urls
+
+# Display popular movies
+st.title('Personalized Movie Recommender')
+st.subheader('Most Popular Movies')
+st.dataframe(popular_movies.head(10))
 
 st.write("""
 Choose a user ID and find some great movie recommendations!
@@ -62,6 +62,20 @@ if st.sidebar.button("Get Recommendations"):
     user_vector = R_transformed[user_id - 1, :]
     predicted_ratings = np.dot(user_vector, svd.components_)
     recommended_movie_ids = np.argsort(predicted_ratings)[::-1][:n_movies]
+
+    recommendations_df = pd.DataFrame(columns=['title', 'image_url'])
+    for movie_id in recommended_movie_ids:
+        movie_details = movies.loc[movies['movieId'] == movie_id].iloc[0]
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=da33e359269762e4cfacfd0eec2816a3&append_to_response=images"
+        response = requests.get(url)
+        images = response.json().get('images', {})
+        image_url = images['posters'][0]['file_path'] if images.get('posters') else None
+        recommendations_df = recommendations_df.append({
+            'title': movie_details['title'],
+            'image_url': f"https://image.tmdb.org/t/p/w200{image_url}" if image_url else None
+        }, ignore_index=True)
+
+    st.dataframe(recommendations_df)
 
     st.write(f"Here are the top {n_movies} movie recommendations for user {user_id}:")
     for movie_id in recommended_movie_ids:
