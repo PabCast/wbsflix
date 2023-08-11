@@ -5,22 +5,20 @@ from surprise import Reader, Dataset, KNNBasic, accuracy
 from surprise.model_selection import train_test_split
 from surprise import SVD
 import movieposters as mp
-st.title("WBSFLIX")
-st.header("Popularity ranking")
 
 movies_df = pd.read_csv('data/movies.csv')
 ratings_df = pd.read_csv('data/ratings.csv')
 
+default_image_url = 'data/ratings.csv'
 
-
-# Sidebar with user input
 selected_movie_name = st.sidebar.selectbox(
     "Select a movie from the dropdown",
-    movies_df['title'].values)
+    movies_df['title'].values
+)
 
-#user_id
-n = 5
 user_id = st.sidebar.number_input("Enter your user ID:", min_value=1, max_value=ratings_df['userId'].max(), step=1)
+
+st.title("Popularity ranking")
 
 def movie_rec(n):
     rating_count_df = ratings_df.groupby('movieId')['rating'].agg(['mean', 'count']).reset_index()
@@ -47,14 +45,24 @@ col1, col2, col3, col4, col5 = st.columns(5)
 col_list = [col1, col2, col3, col4, col5]
 
 for col, (_, row) in zip(col_list, rec_movies.iterrows()):
-    poster_url = mp.get_poster(title=row['title'])
+    try:
+        poster_url = mp.get_poster(title=row['title'])
 
-    with col:
-        st.image(poster_url, caption=row['title'], width=150, output_format='JPEG')
+        if poster_url is not None:
+            with col:
+                st.image(poster_url, caption=row['title'], width=150, output_format='JPEG')
+    except Exception as e:
+        with col:
+            st.image(default_image_url, caption=row['title'], width=150)
 
 
 
-st.header("Based on your pick ")
+
+
+
+
+st.title("item based")
+
 def movies_cosines_rating(id, n):
 
   # Calculate movie cosine similarity
@@ -94,7 +102,6 @@ movies_cosines_matrix = pd.DataFrame(cosine_similarity(user_movies_matrix.T),
 
 
 
-
 # Lookup the selected movie's ID based on the name
 selected_movie_id = movies_df.loc[movies_df['title'] == selected_movie_name, 'movieId'].iloc[0]
 
@@ -105,14 +112,22 @@ col1, col2, col3, col4, col5 = st.columns(5)
 col_list = [col1, col2, col3, col4, col5]
 
 for col, (_, row) in zip(col_list, rec_movies_selected.iterrows()):
-    poster_url = mp.get_poster(title=row['title'])
+    try:
+        poster_url = mp.get_poster(title=row['title'])
 
-    with col:
-        st.image(poster_url, caption=row['title'], width=150, output_format='JPEG')
+        if poster_url is not None:
+            with col:
+                st.image(poster_url, caption=row['title'], width=150, output_format='JPEG')
+    except Exception as e:
+        with col:
+            st.image(default_image_url, caption=row['title'], width=150)
 
 
 
-st.header("What others are watching")
+
+
+
+st.title("user based")
 
 data = ratings_df[['userId', 'movieId', 'rating']]
 watcher = Reader(rating_scale=(1, 5.0))
@@ -158,14 +173,20 @@ def get_top_n_movies(predictions, user_id, n):
     return tuples_df_expanded
 
 
-
+#user_id = 123
+n = 5
 top_n_movies = get_top_n_movies(predictions, user_id, n)
 
 col1, col2, col3, col4, col5 = st.columns(5)
 col_list = [col1, col2, col3, col4, col5]
 
 for col, (_, row) in zip(col_list, top_n_movies.iterrows()):
-    poster_url = mp.get_poster(title=row['title'])
+    try:
+        poster_url = mp.get_poster(title=row['title'])
 
-    with col:
-        st.image(poster_url, caption=row['title'], width=150, output_format='JPEG')
+        if poster_url is not None:
+            with col:
+                st.image(poster_url, caption=row['title'], width=150, output_format='JPEG')
+    except Exception as e:
+        with col:
+            st.image(default_image_url, caption=row['title'], width=150)
