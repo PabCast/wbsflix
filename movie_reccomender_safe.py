@@ -7,12 +7,8 @@ from surprise import SVD
 import movieposters as mp
 
 st.title("Popularity ranking")
-
-url2 = "/content/drive/MyDrive/Colab Notebooks/Week 11/movies.csv"
-movies_df = pd.read_csv(url2)
-
-url3 = "/content/drive/MyDrive/Colab Notebooks/Week 11/ratings.csv"
-ratings_df = pd.read_csv(url3)
+movies_df = pd.read_csv('data/movies.csv')
+ratings_df = pd.read_csv('data/ratings.csv')
 
 def movie_rec(n):
     rating_count_df = ratings_df.groupby('movieId')['rating'].agg(['mean', 'count']).reset_index()
