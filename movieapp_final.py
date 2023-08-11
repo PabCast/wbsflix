@@ -9,7 +9,7 @@ import movieposters as mp
 movies_df = pd.read_csv('data/movies.csv')
 ratings_df = pd.read_csv('data/ratings.csv')
 
-default_image_url = 'data/ratings.csv'
+default_image_url = 'noimg.jpg.jpg'
 
 selected_movie_name = st.sidebar.selectbox(
     "Select a movie from the dropdown",
