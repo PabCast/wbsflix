@@ -8,11 +8,8 @@ import movieposters as mp
 st.title("WBSFLIX")
 st.header("Popularity ranking")
 
-url2 = "/content/drive/MyDrive/Colab Notebooks/Week 11/movies.csv"
-movies_df = pd.read_csv(url2)
-
-url3 = "/content/drive/MyDrive/Colab Notebooks/Week 11/ratings.csv"
-ratings_df = pd.read_csv(url3)
+movies_df = pd.read_csv('data/movies.csv')
+ratings_df = pd.read_csv('data/ratings.csv')
 
 
 
