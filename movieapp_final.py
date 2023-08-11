@@ -18,7 +18,8 @@ selected_movie_name = st.sidebar.selectbox(
 
 user_id = st.sidebar.number_input("Enter your user ID:", min_value=1, max_value=ratings_df['userId'].max(), step=1)
 
-st.title("Popularity ranking")
+st.title("WBSFLIX")
+st.header("Top Rated Movies")
 
 def movie_rec(n):
     rating_count_df = ratings_df.groupby('movieId')['rating'].agg(['mean', 'count']).reset_index()
@@ -61,7 +62,7 @@ for col, (_, row) in zip(col_list, rec_movies.iterrows()):
 
 
 
-st.title("item based")
+st.header("Based on your Pick")
 
 def movies_cosines_rating(id, n):
 
@@ -127,7 +128,7 @@ for col, (_, row) in zip(col_list, rec_movies_selected.iterrows()):
 
 
 
-st.title("user based")
+st.header("What others are Watching")
 
 data = ratings_df[['userId', 'movieId', 'rating']]
 watcher = Reader(rating_scale=(1, 5.0))
